@@ -1,24 +1,35 @@
-import React from "react";
+function QuestionItem({ question, onDelete }) {
+  const handleDelete = () => {
+    const requestOptions = {
+      method: 'DELETE'
+    };
 
-function QuestionItem({ question }) {
-  const { id, prompt, answers, correctIndex } = question;
-
-  const options = answers.map((answer, index) => (
-    <option key={index} value={index}>
-      {answer}
-    </option>
-  ));
+    fetch(`http://localhost:4000/questions/${question.id}`, requestOptions)
+      .then(() => onDelete(question.id));
+  };
 
   return (
-    <li>
-      <h4>Question {id}</h4>
-      <h5>Prompt: {prompt}</h5>
-      <label>
-        Correct Answer:
-        <select defaultValue={correctIndex}>{options}</select>
-      </label>
-      <button>Delete Question</button>
-    </li>
+    <div>
+      <p>{question.prompt}</p>
+      <button onClick={handleDelete}>Delete</button>
+    </div>
+  );
+}
+
+function QuestionList({ questions }) {
+  const [currentQuestions, setCurrentQuestions] = useState(questions);
+
+  const handleDelete = (questionId) => {
+    const updatedQuestions = currentQuestions.filter(question => question.id !== questionId);
+    setCurrentQuestions(updatedQuestions);
+  };
+
+  return (
+    <div>
+      {currentQuestions.map(question => (
+        <QuestionItem key={question.id} question={question} onDelete={handleDelete} />
+      ))}
+    </div>
   );
 }
 
